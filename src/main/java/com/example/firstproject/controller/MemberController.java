@@ -18,6 +18,11 @@ public class MemberController {
     @Autowired
     private MemberRepository memberRepository;
 
+    @GetMapping("/members/new")
+    public String newMemberForm() {
+        return "members/new";
+    }
+
     @GetMapping("/signup")
     public String signUpPage() {
         return "members/new";
@@ -30,7 +35,21 @@ public class MemberController {
         log.info(member.toString());
         Member saved = memberRepository.save(member);
         log.info(saved.toString());
-        return "";
+        return "redirect:/members/" + saved.getId();
+    }
+
+    @GetMapping("/members/{id}")
+    public String show(@PathVariable Long id, Model model) {
+        Member member = memberRepository.findById(id).orElse(null);
+        model.addAttribute("member", member);
+        return "members/show";
+    }
+
+    @GetMapping("/members")
+    public String index(Model model) {
+        Iterable<Member> members = memberRepository.findAll();
+        model.addAttribute("members", members);
+        return "members/index";
     }
 
 }
